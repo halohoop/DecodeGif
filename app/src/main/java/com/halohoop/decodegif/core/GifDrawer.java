@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -37,18 +38,26 @@ public class GifDrawer {
     };
     private Bitmap mBitmap;
 
-
     public void into(ImageView iv) {
         this.targetIv = iv;
         if (is == null) {
             return;
         } else if (iv == null) {
             throw new RuntimeException("R u sure!?iv == null");
+//            return;
         }
         //show
         mMovie = Movie.decodeStream(is);
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         if (mMovie == null) {
             throw new RuntimeException("R u sure!?mMovie == null");
+//            return;
         }
         if (mMovie.width() <= 0 || mMovie.height() <= 0) {
             Log.i(TAG, "into: show shit!");
@@ -59,11 +68,13 @@ public class GifDrawer {
         //need a field casue need a recyle draw
         mCanvas = new Canvas(mBitmap);
         mHandler.post(mDrawTask);
-
     }
-
 
     public void setIs(InputStream is) {
         this.is = is;
+    }
+
+    public ImageView getTargetIv() {
+        return targetIv;
     }
 }
